@@ -1,0 +1,2 @@
+# popeye
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/244990d99454435689933a467531ba10)](https://app.codacy.com/gh/xmnchild/popeye?utm_source=github.com&utm_medium=referral&utm_content=xmnchild/popeye&utm_campaign=Badge_Grade_Settings)
