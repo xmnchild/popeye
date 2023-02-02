@@ -1,0 +1,5 @@
+.env
+db-data
+result/node_modules
+worker/target
+poll/__pycache__

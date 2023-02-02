@@ -2,6 +2,8 @@ FROM python:3
 
 WORKDIR /poll
 
+EXPOSE 80
+
 COPY . .
 RUN pip install -r requirements.txt
 

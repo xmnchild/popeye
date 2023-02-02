@@ -1,0 +1,89 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:9.4
+    container_name: db
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - '5432:5432'
+    networks:
+      - back-tier
+      - result-tier
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - back-tier
+      - poll-tier
+    restart: always
+    environment:
+      - REDIS_HOST=redis
+
+  worker:
+    build: ./worker
+    container_name: run
+    depends_on:
+      - db
+      - redis
+    restart: always
+    networks:
+      - back-tier
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_HOST=db
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+
+
+  poll:
+    build: ./poll
+    container_name: poll
+    depends_on:
+      - redis
+    ports:
+      - "5000:80"
+    networks:
+      - poll-tier
+    restart: always
+    environment:
+      - PORT=80
+      - REDIS_HOST=redis
+      - HOST=0.0.0.0
+
+
+  result:
+    build: ./result
+    container_name: result
+    depends_on:
+      - db
+    ports:
+      - "5001:80"
+    networks:
+      - result-tier
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - DATABASE_HOST=db
+      - POSTGRES_DB=postgres
+      - PORT=80
+
+networks:
+  poll-tier:
+  result-tier:
+  back-tier:
+
+volumes: 
+  db-data:

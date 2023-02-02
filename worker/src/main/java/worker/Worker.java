@@ -7,9 +7,11 @@ import org.json.JSONObject;
 
 class Worker {
   public static void main(String[] args) {
+    System.err.println(System.getenv("REDIS_HOST"));
+
     try {
-        Jedis redis = connectToRedis("127.0.0.1");
-        Connection dbConn = connectToDB("127.0.0.1");
+        Jedis redis = connectToRedis(System.getenv("REDIS_HOST"));
+        Connection dbConn = connectToDB(System.getenv("DATABASE_HOST"));
 
         System.err.println("Watching vote queue");
 
@@ -68,7 +70,7 @@ class Worker {
     try {
 
       Class.forName("org.postgresql.Driver");
-      String url = "jdbc:postgresql://" + host + "/postgres";
+      String url = "jdbc:postgresql://" + System.getenv("DATABASE_HOST") + "/" + System.getenv("POSTGRES_DB");
 
       while (conn == null) {
         try {
